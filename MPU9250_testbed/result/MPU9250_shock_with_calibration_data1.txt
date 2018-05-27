@@ -1,0 +1,984 @@
+Initializing I2C devices...
+Testing device connections...
+MPU9250 connection successful
+     
+Time: 190 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+542	-0.01
+Time: 359 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+542	-0.01
+Time: 527 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+544	0.00
+Time: 696 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+541	-0.02
+Time: 864 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+541	-0.02
+Time: 1033 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+542	-0.01
+Time: 1202 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+543	-0.01
+Time: 1370 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+543	-0.01
+Time: 1539 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+543	-0.01
+Time: 1708 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+542	-0.01
+Time: 1876 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+543	-0.01
+Time: 2045 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+539	-0.03
+Time: 2213 
+Acceleration(g) of X,Y,Z:
+x축:0.00	y축:0.06	z축:1.06
+충격센서: 
+539	-0.03
+Time: 2382 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.04	z축:1.08
+충격센서: 
+544	0.00
+Time: 2551 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+545	0.01
+Time: 2719 
+Acceleration(g) of X,Y,Z:
+x축:2.00	y축:0.82	z축:0.25
+충격센서: 
+584	0.21
+Time: 2887 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.06	z축:1.05
+충격센서: 
+641	0.52
+Time: 3056 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+635	0.49
+Time: 3225 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.07
+충격센서: 
+628	0.45
+Time: 3393 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+623	0.42
+Time: 3562 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+619	0.40
+Time: 3730 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+616	0.39
+Time: 3899 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+614	0.38
+Time: 4067 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+611	0.36
+Time: 4236 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.07
+충격센서: 
+608	0.34
+Time: 4404 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+606	0.33
+Time: 4573 
+Acceleration(g) of X,Y,Z:
+x축:-0.95	y축:0.15	z축:0.85
+충격센서: 
+668	0.67
+Time: 4742 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+488	-0.30
+Time: 4911 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+486	-0.31
+Time: 5079 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+490	-0.29
+Time: 5248 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+496	-0.26
+Time: 5416 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+501	-0.23
+Time: 5585 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+504	-0.21
+Time: 5753 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.07
+충격센서: 
+506	-0.20
+Time: 5922 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+507	-0.20
+Time: 6091 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+509	-0.19
+Time: 6260 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+511	-0.18
+Time: 6429 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+514	-0.16
+Time: 6597 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+517	-0.14
+Time: 6766 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+519	-0.13
+Time: 6935 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+521	-0.12
+Time: 7104 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+758	1.15
+Time: 7272 
+Acceleration(g) of X,Y,Z:
+x축:0.39	y축:0.05	z축:1.03
+충격센서: 
+481	-0.34
+Time: 7441 
+Acceleration(g) of X,Y,Z:
+x축:-0.27	y축:0.09	z축:1.06
+충격센서: 
+559	0.08
+Time: 7610 
+Acceleration(g) of X,Y,Z:
+x축:0.31	y축:0.07	z축:1.07
+충격센서: 
+733	1.01
+Time: 7779 
+Acceleration(g) of X,Y,Z:
+x축:-0.45	y축:-0.11	z축:1.05
+충격센서: 
+545	0.01
+Time: 7948 
+Acceleration(g) of X,Y,Z:
+x축:-0.39	y축:-0.01	z축:1.05
+충격센서: 
+693	0.80
+Time: 8117 
+Acceleration(g) of X,Y,Z:
+x축:0.62	y축:0.59	z축:1.09
+충격센서: 
+736	1.03
+Time: 8286 
+Acceleration(g) of X,Y,Z:
+x축:0.06	y축:-0.04	z축:0.69
+충격센서: 
+618	0.40
+Time: 8455 
+Acceleration(g) of X,Y,Z:
+x축:0.49	y축:0.15	z축:1.08
+충격센서: 
+633	0.48
+Time: 8623 
+Acceleration(g) of X,Y,Z:
+x축:-0.04	y축:0.06	z축:1.12
+충격센서: 
+624	0.43
+Time: 8792 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+617	0.39
+Time: 8960 
+Acceleration(g) of X,Y,Z:
+x축:-0.39	y축:0.02	z축:1.07
+충격센서: 
+791	1.33
+Time: 9128 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.08
+충격센서: 
+778	1.26
+Time: 9297 
+Acceleration(g) of X,Y,Z:
+x축:0.40	y축:-0.36	z축:0.98
+충격센서: 
+227	-1.70
+Time: 9466 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+291	-1.36
+Time: 9634 
+Acceleration(g) of X,Y,Z:
+x축:-1.04	y축:0.01	z축:1.03
+충격센서: 
+326	-1.17
+Time: 9804 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+389	-0.83
+Time: 9972 
+Acceleration(g) of X,Y,Z:
+x축:-0.12	y축:-0.63	z축:1.16
+충격센서: 
+256	-1.55
+Time: 10142 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+312	-1.25
+Time: 10310 
+Acceleration(g) of X,Y,Z:
+x축:1.53	y축:0.09	z축:1.38
+충격센서: 
+643	0.53
+Time: 10479 
+Acceleration(g) of X,Y,Z:
+x축:0.03	y축:0.06	z축:1.06
+충격센서: 
+476	-0.37
+Time: 10648 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+411	-0.71
+Time: 10817 
+Acceleration(g) of X,Y,Z:
+x축:0.48	y축:0.29	z축:1.02
+충격센서: 
+432	-0.60
+Time: 10986 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+432	-0.60
+Time: 11156 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+438	-0.57
+Time: 11325 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+443	-0.54
+Time: 11494 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+449	-0.51
+Time: 11663 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+459	-0.46
+Time: 11832 
+Acceleration(g) of X,Y,Z:
+x축:-0.43	y축:0.02	z축:1.54
+충격센서: 
+837	1.57
+Time: 12001 
+Acceleration(g) of X,Y,Z:
+x축:0.05	y축:-0.02	z축:1.05
+충격센서: 
+683	0.75
+Time: 12170 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+675	0.70
+Time: 12339 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+666	0.66
+Time: 12508 
+Acceleration(g) of X,Y,Z:
+x축:0.05	y축:-0.65	z축:0.84
+충격센서: 
+259	-1.53
+Time: 12677 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:-0.03	z축:0.92
+충격센서: 
+308	-1.27
+Time: 12846 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+358	-1.00
+Time: 13015 
+Acceleration(g) of X,Y,Z:
+x축:-0.05	y축:0.05	z축:1.65
+충격센서: 
+754	1.13
+Time: 13184 
+Acceleration(g) of X,Y,Z:
+x축:-0.01	y축:0.03	z축:1.10
+충격센서: 
+596	0.28
+Time: 13352 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+588	0.24
+Time: 13521 
+Acceleration(g) of X,Y,Z:
+x축:0.43	y축:0.38	z축:1.19
+충격센서: 
+246	-1.60
+Time: 13690 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+375	-0.91
+Time: 13859 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+383	-0.86
+Time: 14028 
+Acceleration(g) of X,Y,Z:
+x축:-0.00	y축:0.11	z축:0.78
+충격센서: 
+739	1.05
+Time: 14197 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+603	0.32
+Time: 14366 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+593	0.26
+Time: 14535 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+589	0.24
+Time: 14704 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+586	0.23
+Time: 14873 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+584	0.21
+Time: 15041 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+582	0.20
+Time: 15210 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+582	0.20
+Time: 15379 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+582	0.20
+Time: 15548 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+579	0.19
+Time: 15717 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+578	0.18
+Time: 15885 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+575	0.17
+Time: 16054 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.07
+충격센서: 
+574	0.16
+Time: 16223 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+582	0.20
+Time: 16392 
+Acceleration(g) of X,Y,Z:
+x축:-0.02	y축:0.07	z축:1.12
+충격센서: 
+568	0.13
+Time: 16561 
+Acceleration(g) of X,Y,Z:
+x축:-0.00	y축:0.09	z축:1.14
+충격센서: 
+561	0.09
+Time: 16730 
+Acceleration(g) of X,Y,Z:
+x축:-0.02	y축:0.06	z축:1.05
+충격센서: 
+565	0.11
+Time: 16899 
+Acceleration(g) of X,Y,Z:
+x축:0.07	y축:0.00	z축:1.04
+충격센서: 
+575	0.17
+Time: 17068 
+Acceleration(g) of X,Y,Z:
+x축:0.03	y축:0.01	z축:1.07
+충격센서: 
+569	0.13
+Time: 17236 
+Acceleration(g) of X,Y,Z:
+x축:0.04	y축:0.03	z축:1.06
+충격센서: 
+563	0.10
+Time: 17404 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:-0.01	z축:1.07
+충격센서: 
+558	0.08
+Time: 17573 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.05	z축:1.06
+충격센서: 
+563	0.10
+Time: 17742 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.06	z축:1.06
+충격센서: 
+565	0.11
+Time: 17911 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.04	z축:1.07
+충격센서: 
+568	0.13
+Time: 18080 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+565	0.11
+Time: 18249 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+565	0.11
+Time: 18417 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+563	0.10
+Time: 18586 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+564	0.11
+Time: 18755 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+564	0.11
+Time: 18924 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+565	0.11
+Time: 19092 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+565	0.11
+Time: 19261 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+564	0.11
+Time: 19430 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.05
+충격센서: 
+563	0.10
+Time: 19599 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+563	0.10
+Time: 19768 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+563	0.10
+Time: 19936 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.05
+충격센서: 
+562	0.10
+Time: 20105 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+563	0.10
+Time: 20274 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+563	0.10
+Time: 20443 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+565	0.11
+Time: 20612 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.04	z축:1.06
+충격센서: 
+564	0.11
+Time: 20780 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+563	0.10
+Time: 20948 
+Acceleration(g) of X,Y,Z:
+x축:-0.41	y축:0.10	z축:1.06
+충격센서: 
+325	-1.18
+Time: 21118 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+360	-0.99
+Time: 21287 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+375	-0.91
+Time: 21456 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+388	-0.84
+Time: 21625 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+399	-0.78
+Time: 21794 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+408	-0.73
+Time: 21963 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+414	-0.70
+Time: 22132 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+420	-0.67
+Time: 22301 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.05
+충격센서: 
+428	-0.62
+Time: 22470 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+435	-0.59
+Time: 22639 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+442	-0.55
+Time: 22808 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+447	-0.52
+Time: 22977 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+452	-0.49
+Time: 23146 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:-0.02	z축:1.07
+충격센서: 
+456	-0.47
+Time: 23315 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+459	-0.46
+Time: 23484 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+626	0.44
+Time: 23653 
+Acceleration(g) of X,Y,Z:
+x축:-0.01	y축:0.06	z축:1.09
+충격센서: 
+499	-0.24
+Time: 23823 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+499	-0.24
+Time: 23992 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+502	-0.23
+Time: 24161 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+503	-0.22
+Time: 24330 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+504	-0.21
+Time: 24499 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.04	z축:1.06
+충격센서: 
+506	-0.20
+Time: 24668 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+513	-0.17
+Time: 24837 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+512	-0.17
+Time: 25006 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+515	-0.16
+Time: 25175 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+515	-0.16
+Time: 25344 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+517	-0.14
+Time: 25512 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+515	-0.16
+Time: 25681 
+Acceleration(g) of X,Y,Z:
+x축:-1.54	y축:0.05	z축:0.67
+충격센서: 
+366	-0.96
+Time: 25850 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+292	-1.35
+Time: 26019 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.07
+충격센서: 
+314	-1.24
+Time: 26188 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+329	-1.15
+Time: 26357 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+342	-1.08
+Time: 26526 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+352	-1.03
+Time: 26695 
+Acceleration(g) of X,Y,Z:
+x축:0.39	y축:0.05	z축:1.00
+충격센서: 
+484	-0.32
+Time: 26864 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+517	-0.14
+Time: 27034 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+517	-0.14
+Time: 27203 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+517	-0.14
+Time: 27372 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+264	-1.50
+Time: 27541 
+Acceleration(g) of X,Y,Z:
+x축:-0.04	y축:0.06	z축:1.09
+충격센서: 
+389	-0.83
+Time: 27710 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+409	-0.72
+Time: 27879 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+417	-0.68
+Time: 28048 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+425	-0.64
+Time: 28217 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+432	-0.60
+Time: 28386 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+440	-0.56
+Time: 28555 
+Acceleration(g) of X,Y,Z:
+x축:0.39	y축:-0.11	z축:1.04
+충격센서: 
+367	-0.95
+Time: 28725 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.07
+충격센서: 
+194	-1.88
+Time: 28894 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.06	z축:1.07
+충격센서: 
+423	-0.65
+Time: 29063 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+424	-0.64
+Time: 29232 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+431	-0.61
+Time: 29401 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+438	-0.57
+Time: 29570 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+444	-0.54
+Time: 29739 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+451	-0.50
+Time: 29907 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+454	-0.48
+Time: 30076 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+457	-0.47
+Time: 30245 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+461	-0.45
+Time: 30414 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.05	z축:1.08
+충격센서: 
+465	-0.42
+Time: 30583 
+Acceleration(g) of X,Y,Z:
+x축:0.02	y축:0.04	z축:1.06
+충격센서: 
+471	-0.39
+Time: 30752 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+475	-0.37
+Time: 30921 
+Acceleration(g) of X,Y,Z:
+x축:0.00	y축:0.05	z축:1.08
+충격센서: 
+484	-0.32
+Time: 31090 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+482	-0.33
+Time: 31259 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+483	-0.33
+Time: 31428 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+485	-0.32
+Time: 31598 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+488	-0.30
+Time: 31767 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+493	-0.27
+Time: 31936 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+496	-0.26
+Time: 32105 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+499	-0.24
+Time: 32274 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+500	-0.24
+Time: 32443 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+501	-0.23
+Time: 32612 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+502	-0.23
+Time: 32781 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.05	z축:1.06
+충격센서: 
+505	-0.21
+Time: 32950 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.06
+충격센서: 
+508	-0.19
+Time: 33119 
+Acceleration(g) of X,Y,Z:
+x축:0.01	y축:0.04	z축:1.07
+충격센서: 
+512	-0.17

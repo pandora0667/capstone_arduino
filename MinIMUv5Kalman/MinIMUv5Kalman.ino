@@ -1,0 +1,330 @@
+#include <LSM6.h>
+#include <LIS3MDL.h>
+
+#include <Wire.h>
+#include <math.h>
+
+// all datas from imu is RAW int data
+LSM6 imu;
+
+
+/* Kalman filter */
+struct GyroKalman {
+  /* These variables represent our state matrix x */
+  float x_angle, x_bias;
+
+  /* Our error covariance matrix */
+  float P_00, P_01, P_10, P_11;
+  
+  /*
+  * Q is a 2x2 matrix of the covariance. Because we
+  * assume the gyro and accelerometer noise to be independent
+  * of each other, the covariances on the / diagonal are 0.
+  * Covariance Q, the process noise, from the assumption
+  * x = F x + B u + w
+  * with w having a normal distribution with covariance Q.
+  * (covariance = E[ (X - E[X])*(X - E[X])' ]
+  * We assume is linear with dt
+  */
+  float Q_angle, Q_gyro;
+
+  /*
+  * Covariance R, our observation noise (from the accelerometer)
+  * Also assumed to be linear with dt
+  */
+  float R_angle;
+};
+
+struct GyroKalman angX;
+struct GyroKalman angY;
+struct GyroKalman angZ;
+
+void initGyroKalman(struct GyroKalman *kalman, const float Q_angle, const float Q_gyro, const float R_angle);
+void predict(struct GyroKalman *kalman, float dotAngle, float dt) ;
+float update(struct GyroKalman *kalman, float angle_m);
+
+/*
+* R represents the measurement covariance noise. In this case,
+* it is a 1x1 matrix that says that we expect 0.3 rad jitter
+* from the accelerometer.
+*/
+static const float R_angle = 0.3;     //.3 default
+
+/*
+* Q is a 2x2 matrix that represents the process covariance noise.
+* In this case, it indicates how much we trust the acceleromter
+* relative to the gyros
+*/
+static const float Q_angle = 0.01;  //0.01 (Kalman)
+static const float Q_gyro = 0.04; //0.04 (Kalman)
+
+
+/* time */
+unsigned long prevTime = 0;
+unsigned long nowTime = 0;
+
+// calibration data
+int initSize = 5;
+int initIndex = 0;
+int initGyroX[5] = {0,0,0,0,0};
+int initGyroY[5] = {0,0,0,0,0};
+int initGyroZ[5] = {0,0,0,0,0};
+
+int GyroCalX = 0;
+int GyroCalY = 0;
+int GyroCalZ = 0;
+
+
+/* accelerometer filter variables */
+float accelEMAalpha = 0.5;
+int accelTabSize = 5;
+float accelAlphas[5] = {0,0,0,0,0};
+int accelTabX[5] =  {0,0,0,0,0};
+int accelTabY[5] =  {0,0,0,0,0};
+int accelTabZ[5] =  {0,0,0,0,0};
+int accelTabCount = 0;
+
+int accelCalX = 0;
+int accelCalY = 0;
+int accelCalZ = 0;
+
+int accelEMA_X = 0;
+int accelEMA_Y = 0;
+int accelEMA_Z = 0;
+
+
+
+
+
+
+
+void setup()
+{
+  Serial.begin(230400);
+  Wire.begin();
+  //init gyro and kalman filter for gyro
+  initGyroKalman(&angX, Q_angle, Q_gyro, R_angle);
+  initGyroKalman(&angY, Q_angle, Q_gyro, R_angle);
+  initGyroKalman(&angZ, Q_angle, Q_gyro, R_angle);
+
+  //init accelerometer and EMA values
+  char ii; // temp var
+  for(ii =0; ii < accelTabSize; ii++ ) {
+    accelAlphas[ii] = pow((accelEMAalpha), ii+1);
+    Serial.println(accelAlphas[ii] );
+  }
+  
+  if (!imu.init())
+  {
+    Serial.println("Failed to detect and initialize IMU!");
+    while (1);
+  }
+  imu.enableDefault();
+}
+
+void loop()
+{
+  imu.read();
+
+  nowTime = millis();
+
+  int deltaTime = nowTime - prevTime;
+  
+  
+  if(prevTime > 0) {
+    int gx1=0, gy1=0, gz1 = 0;
+    int gx2=0, gy2=0, gz2 = 0;
+
+
+    gx2 = imu.g.x;
+    gy2 = imu.g.y;
+    gz2 = imu.g.z;
+
+    predict(&angX, gx2, deltaTime);
+    predict(&angY, gy2, deltaTime);
+    predict(&angZ, gz2, deltaTime);
+
+    gx1 = update(&angX, imu.a.x) / 10;
+    gy1 = update(&angY, imu.a.y) / 10;
+    gz1 = update(&angZ, imu.a.z) / 10;
+
+    /////////////////////////////////////////////////////////////////////////////
+    //  gyro/Angle init.
+    /////////////////////////////////////////////////////////////////////////////
+    if(initIndex < initSize) {
+      initGyroX[initIndex] = gx1;
+      initGyroY[initIndex] = gy1;
+      initGyroZ[initIndex] = gz1;
+      if(initIndex == initSize - 1) {
+        int sumX = 0; int sumY = 0; int sumZ = 0;
+        for(int k=1; k <= initSize; k++) {
+          sumX += initGyroX[k];
+          sumY += initGyroX[k];
+          sumZ += initGyroX[k];
+        }
+
+        GyroCalX -= sumX/(initSize -1);
+        GyroCalY -= sumY/(initSize -1);
+        GyroCalZ = (sumZ/(initSize -1) - GyroCalZ);
+      }
+      initIndex++;
+    }
+    
+    /////////////////////////////////////////////////////////////////////////////
+    //  adjust calibration of gyro.
+    /////////////////////////////////////////////////////////////////////////////
+    else {
+        gx1 += GyroCalX;
+        gy1 += GyroCalY;
+        //gz1 += GyroCalZ;
+
+        /* actions here */
+        
+        
+
+    }
+
+    if(accelTabCount < accelTabSize) {
+        accelTabX[accelTabCount] = imu.a.x;
+        accelTabY[accelTabCount] = imu.a.y;
+        //accelTabZ[accelTabCount] = imu.a.z;
+        accelTabCount++;
+    }
+
+    if(accelTabCount == accelTabSize) {
+        char ii;
+        for(ii =0; ii < accelTabSize; ii++ ) {
+            accelCalX += accelTabX[ii];
+            accelCalY += accelTabY[ii];
+            //accelCalZ += accelTabZ[ii];
+        }
+        accelCalX /= accelTabSize;
+        accelCalY /= accelTabSize;
+        //accelCalZ /= accelTabSize;
+        for(ii =0; ii < accelTabSize; ii++ ) {
+            accelTabX[ii] -= accelCalX;
+            accelTabY[ii] -= accelCalY;
+            //accelTabZ[ii] -= accelCalZ;
+        }
+        accelTabCount = accelTabSize+1;
+    }
+   
+    else {
+      char ii;
+      float tempEMA_X = 0;
+      float tempEMA_Y = 0;
+      //float tempEMA_Z = 0;
+
+      //push datas in accelTabX and put new data from sensor at the end of accelTabX
+      for(ii = 0; ii <accelTabSize-1; ii++) {
+          accelTabX[ii] = accelTabX[ii+1];
+          accelTabY[ii] = accelTabY[ii+1];
+          //accelTabZ[ii] = accelTabZ[ii+1];
+      }
+      accelTabX[accelTabSize - 1] = imu.a.x - accelCalX;
+      accelTabY[accelTabSize - 1] = imu.a.y - accelCalY;
+      //accelTabZ[accelTabSize - 1] = imu.a.z - accelCalZ;
+
+      //calc EMA of acceleration.
+      // EMA_now = alpha*(val1 + ((1-alpha)**1)val2 + ((1-alpha)**2)val3 + ....
+      for(ii = accelTabSize; ii > 0; ii--) {
+          tempEMA_X += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabX[accelTabSize-ii] );
+          tempEMA_Y += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabY[accelTabSize-ii] );
+          //tempEMA_Z += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabZ[accelTabSize-ii] );
+      }
+      accelEMA_X = (int)tempEMA_X;
+      accelEMA_Y = (int)tempEMA_Y;
+      //accelEMA_Z = (int)tempEMA_Z;
+      
+      
+    }
+       
+
+    
+    
+    /* output under here */
+    /*
+    Serial.print("time (ms) : ");
+    Serial.println(nowTime);
+    Serial.print("Acceleration x,y,z :" );
+    Serial.print(accelEMA_X);
+    Serial.print(", ");
+    Serial.print(accelEMA_Y);
+    Serial.print(", ");
+    Serial.print(accelEMA_Z);
+    Serial.print("\n");
+    Serial.print(F("Angle x,y,z : "));
+    Serial.print(gx1, DEC);
+    Serial.print(F(", "));
+    Serial.print(gy1, DEC);
+    Serial.print(F(", "));
+    Serial.print(gz1, DEC);
+    Serial.println(F(""));
+    */
+
+    /* debug output here */
+    
+    char ii;
+    for(ii = 0; ii < accelTabSize;ii++) {
+      Serial.print(accelTabZ[ii]);
+      Serial.print(" ; ");
+    }
+    Serial.print("\n");
+    Serial.print(imu.a.z);
+    Serial.print(" , ");
+    Serial.print(accelEMA_Z);
+    Serial.print("\n");
+    
+  
+  }
+
+  prevTime = nowTime;
+  //delay(20);
+  delay(100); // for debug
+  
+} // End of loop()
+
+void initGyroKalman(struct GyroKalman *kalman, const float Q_angle, const float Q_gyro, const float R_angle) {
+  kalman->Q_angle = Q_angle;
+  kalman->Q_gyro = Q_gyro;
+  kalman->R_angle = R_angle;
+  
+  kalman->P_00 = 0;
+  kalman->P_01 = 0;
+  kalman->P_10 = 0;
+  kalman->P_11 = 0;
+}
+
+/*
+* The kalman predict method.
+* kalman    the kalman data structure
+* dotAngle    Derivitive Of The (D O T) Angle. This is the change in the angle from the gyro.
+*           This is the value from the Wii MotionPlus, scaled to fast/slow.
+* dt        the change in time, in seconds; in other words the amount of time it took to sweep dotAngle
+*/
+void predict(struct GyroKalman *kalman, float dotAngle, float dt) {
+  kalman->x_angle += dt * (dotAngle - kalman->x_bias);
+  kalman->P_00 += -1 * dt * (kalman->P_10 + kalman->P_01) + dt*dt * kalman->P_11 + kalman->Q_angle;
+  kalman->P_01 += -1 * dt * kalman->P_11;
+  kalman->P_10 += -1 * dt * kalman->P_11;
+  kalman->P_11 += kalman->Q_gyro;
+}
+
+/*
+* The kalman update method
+* kalman  the kalman data structure
+* angle_m   the angle observed from the Wii Nunchuk accelerometer, in radians
+*/
+float update(struct GyroKalman *kalman, float angle_m) {
+  const float y = angle_m - kalman->x_angle;
+  const float S = kalman->P_00 + kalman->R_angle;
+  const float K_0 = kalman->P_00 / S;
+  const float K_1 = kalman->P_10 / S;
+  kalman->x_angle += K_0 * y;
+  kalman->x_bias += K_1 * y;
+  kalman->P_00 -= K_0 * kalman->P_00;
+  kalman->P_01 -= K_0 * kalman->P_01;
+  kalman->P_10 -= K_1 * kalman->P_00;
+  kalman->P_11 -= K_1 * kalman->P_01;
+  return kalman->x_angle;
+}
