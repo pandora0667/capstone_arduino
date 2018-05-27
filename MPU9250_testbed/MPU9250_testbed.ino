@@ -1,3 +1,4 @@
+
 #include "Wire.h"
 
 #include "I2Cdev.h"
@@ -76,18 +77,19 @@ int deltatime = 0;
 void setup()
 {
     Wire.begin();
-    Serial.begin(9600);                        // 통신속도 38400 bps
+    Serial.begin(9600);                        
 
-    Serial.println("Initializing I2C devices...");
+    Serial.println("{""status"":""initialising""}");
     accelgyro.initialize();
     // verify connection
-    Serial.println("Testing device connections...");
-    Serial.println(accelgyro.testConnection() ? "MPU9250 connection successful" : "MPU9250 connection failed");
+    // Serial.println("Testing device connections...");
+    Serial.println(accelgyro.testConnection() ? "{""status"":""successful""}" : "{""status"":""failed""}");
     delay(100);
     Serial.println("     ");
     // Calibration. device must not move or get force while calibrating
     // Kalman Filter will be added soon
     // calibrate Accelerometer
+    Serial.println("{""calibration"":""calibrating""}");
     getAccel_Data();
     Axyz_calib[0] = Axyz[0];
     Axyz_calib[1] = Axyz[1];
@@ -107,6 +109,8 @@ void setup()
     piezo_calib = analogRead(A0);
     
     //  Mxyz_init_calibrated ();
+    
+    Serial.print("{""calibration"":""successful""}");
 }
 
 
@@ -290,4 +294,3 @@ void getShockSensor_data() {
     piezo = analogRead(A0);
     shock = Volt2G*(piezo - piezo_calib);
 }
-
