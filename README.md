@@ -1,2 +1,4 @@
 # capstone_arduino
-capstone_arduino
+한밭대학교 정보통신공학과 4학년 이성원, 캡스톤 프로젝트 아두이노 코드 입니다. 
+
+
