@@ -37,6 +37,7 @@ float tiltheading;
 float Axyz_calib[3];
 float Gxyz_calib[3];
 int piezo_calib = 600;
+int calib_done = 0;
 
 // final data
 float Axyz[3];
@@ -82,32 +83,8 @@ void setup() {
     
     delay(1000);
     Serial.println("     ");
-    // Calibration. device must not move or get force while calibrating
-    // Kalman Filter will be added soon
-    // calibrate Accelerometer
-    // Serial.println("{""calibration"":""calibrating""}");
-    
-    getAccel_Data();
-    Axyz_calib[0] = Axyz[0];
-    Axyz_calib[1] = Axyz[1];
-    Axyz_calib[2] = Axyz[2];
-    // calibrate gyro
-    getGyro_Data();
-    Gxyz_calib[0] = Gxyz[0];
-    Gxyz_calib[1] = Gxyz[1];
-    Gxyz_calib[2] = Gxyz[2];
-    
-    // calibrate Initial Angle from Accelerometer
-    /*
-     * not implemented
-     */
-     
-    // calibrate piezo
-    piezo_calib = analogRead(A0);
-    
     //  Mxyz_init_calibrated ();
     
-    Serial.print("{""calibration"":""successful""}");
 }
 
 
@@ -124,30 +101,73 @@ void loop() {
     deltatime = millis() - time_last;
     time_last = millis();
     calcAngleFromGyro(deltatime);
-
     //JSON Parsing... 
     StaticJsonBuffer<700> jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
+  
+   if(calib_done) {
+      JsonArray& acceleration = root.createNestedArray("acceleration");
+      acceleration.add(Axyz[0]);
+      acceleration.add(Axyz[1]);
+      acceleration.add(Axyz[2]);
+  
+      JsonArray& gyro = root.createNestedArray("gyro");
+      gyro.add(Gxyz[0]);
+      gyro.add(Gxyz[1]);
+      gyro.add(Gxyz[2]);
+  
+      JsonArray& angle = root.createNestedArray("angle");
+      angle.add(Wxyz[0]);
+      angle.add(Wxyz[1]);
+      angle.add(Wxyz[2]); 
+  
+      root["attack"] = shock;    // calced Shock by sensor. Analog Piezo Shock Sensor. 핀번호 A0
+  
+      root.printTo(Serial);
+      Serial.print("\n");
+    }
 
-    JsonArray& acceleration = root.createNestedArray("acceleration");
-    acceleration.add(Axyz[0]);
-    acceleration.add(Axyz[1]);
-    acceleration.add(Axyz[2]);
+    else {
+      // Serial.println("{""calibration"":""calibrating""}");
+      JsonArray& AccelCalJSON = root.createNestedArray("Accel_calib");
+      // Calibration. device must not move or get force while calibrating
+      // Kalman Filter will be added soon
+      // calibrate Accelerometer
+      Axyz_calib[0] = Axyz[0];
+      Axyz_calib[1] = Axyz[1];
+      Axyz_calib[2] = Axyz[2];
+      AccelCalJSON.add(Axyz_calib[0]);
+      AccelCalJSON.add(Axyz_calib[1]);
+      AccelCalJSON.add(Axyz_calib[2]);
+      // calibrate gyro
+      JsonArray& gyroCalJSON = root.createNestedArray("gyro_calib");
+      Gxyz_calib[0] = Gxyz[0];
+      Gxyz_calib[1] = Gxyz[1];
+      Gxyz_calib[2] = Gxyz[2];
+      gyroCalJSON.add(Gxyz_calib[9]);
+      gyroCalJSON.add(Gxyz_calib[1]);
+      gyroCalJSON.add(Gxyz_calib[2]);
+      
+      // calibrate Initial Angle from Accelerometer
+      /*
+       * not implemented
+       */
+       
+      // calibrate piezo
+      JsonArray& piezoCalibJSON = root.createNestedArray("piezo_calib");
+      piezo_calib = analogRead(A0);
+      piezoCalibJSON.add(Axyz_calib[2]);
 
-    JsonArray& gyro = root.createNestedArray("gyro");
-    gyro.add(Gxyz[0]);
-    gyro.add(Gxyz[1]);
-    gyro.add(Gxyz[2]);
-
-    JsonArray& angle = root.createNestedArray("angle");
-    angle.add(Wxyz[0]);
-    angle.add(Wxyz[1]);
-    angle.add(Wxyz[2]); 
-
-    root["attack"] = shock;    // calced Shock by sensor. Analog Piezo Shock Sensor. 핀번호 A0
-
-    root.printTo(Serial);
-    Serial.print("\n");
+      // print result
+      JsonArray& calibration = root.createNestedArray("calibration");
+      calibration.add("successful");
+      
+      root.printTo(Serial);
+      Serial.print("\n");
+      calib_done = 1;
+      
+    }
+    
     delay(1000);
 }
 
