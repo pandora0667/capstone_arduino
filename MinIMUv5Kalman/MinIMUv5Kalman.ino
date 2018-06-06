@@ -63,7 +63,7 @@ static const float Q_gyro = 0.04; //0.04 (Kalman)
 unsigned long prevTime = 0;
 unsigned long nowTime = 0;
 
-// calibration data
+/* calibration data */
 int initSize = 5;
 int initIndex = 0;
 int initGyroX[5] = {0,0,0,0,0};
@@ -88,11 +88,18 @@ int accelCalX = 0;
 int accelCalY = 0;
 int accelCalZ = 0;
 
-int accelEMA_X = 0;
-int accelEMA_Y = 0;
-int accelEMA_Z = 0;
+float gravityX = 0;
+float gravityY = 0;
+float gravityZ = 0;
+
+float accelFinalX = 0;
+float accelFinalY = 0;
+float accelFinalZ = 0;
 
 
+float accelAngleX = 0;
+float accelAngleY = 0;
+float accelAngleZ = 0;
 
 
 
@@ -128,25 +135,91 @@ void loop()
 
   nowTime = millis();
 
-  int deltaTime = nowTime - prevTime;
+  double deltaTime = (float)(nowTime - prevTime) * 0.001 ;
   
   
   if(prevTime > 0) {
-    int gx1=0, gy1=0, gz1 = 0;
-    int gx2=0, gy2=0, gz2 = 0;
+    /* accelerometer code here */
+    if(accelTabCount < accelTabSize) {
+        accelTabX[accelTabCount] = imu.a.x;
+        accelTabY[accelTabCount] = imu.a.y;
+        accelTabZ[accelTabCount] = imu.a.z;
+        accelTabCount++;
+    }
+
+    if(accelTabCount == accelTabSize) {
+        char ii;
+        for(ii =0; ii < accelTabSize; ii++ ) {
+            accelCalX += accelTabX[ii];
+            accelCalY += accelTabY[ii];
+            accelCalZ += accelTabZ[ii];
+        }
+        accelCalX /= accelTabSize;
+        accelCalY /= accelTabSize;
+        accelCalZ /= accelTabSize;
+        for(ii =0; ii < accelTabSize; ii++ ) {
+            accelTabX[ii] -= accelCalX;
+            accelTabY[ii] -= accelCalY;
+            accelTabZ[ii] -= accelCalZ;
+        }
+        accelTabCount = accelTabSize+1;
+    }
+   
+    else {
+      char ii;
+      float tempEMA_X = 0;
+      float tempEMA_Y = 0;
+      float tempEMA_Z = 0;
+
+      
+      //push datas in accelTabX and put new data from sensor at the end of accelTabX
+      for(ii = 0; ii <accelTabSize-1; ii++) {
+          accelTabX[ii] = accelTabX[ii+1];
+          accelTabY[ii] = accelTabY[ii+1];
+          accelTabZ[ii] = accelTabZ[ii+1];
+      }
+      accelTabX[accelTabSize - 1] = imu.a.x - accelCalX;
+      accelTabY[accelTabSize - 1] = imu.a.y - accelCalY;
+      accelTabZ[accelTabSize - 1] = imu.a.z - accelCalZ;
+
+      //calc EMA of acceleration.
+      // EMA_now = alpha*(val1 + ((1-alpha)**1)val2 + ((1-alpha)**2)val3 + ....
+      for(ii = accelTabSize; ii > 0; ii--) {
+          tempEMA_X += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabX[accelTabSize-ii] );
+          tempEMA_Y += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabY[accelTabSize-ii] );
+          tempEMA_Z += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabZ[accelTabSize-ii] );
+      }
+      // low pass filter for removing gravity
+      gravityX = 0.1 * tempEMA_X + 0.9 * gravityX;
+      gravityY = 0.1 * tempEMA_Y + 0.9 * gravityY;
+      gravityZ = 0.1 * tempEMA_Z + 0.9 * gravityZ;
+      
+      accelFinalX = 0.061 * 0.001 * (tempEMA_X - gravityX);
+      accelFinalY = 0.061 * 0.001 * (tempEMA_Y - gravityY);
+      accelFinalZ = 0.061 * 0.001 * (tempEMA_Z - gravityZ);
+
+      accelAngleX = atan((float)accelFinalY/(float)accelFinalZ) * RAD_TO_DEG;
+      accelAngleY = atan((float)accelFinalZ/(float)accelFinalX) * RAD_TO_DEG;
+      accelAngleZ = atan((float)accelFinalX/(float)accelFinalZ) * RAD_TO_DEG;
+      
+    }
+
+    /* gyro code here */
+    float gx1=0, gy1=0, gz1 = 0;
+    float gx2=0, gy2=0, gz2 = 0;
 
 
-    gx2 = imu.g.x;
-    gy2 = imu.g.y;
-    gz2 = imu.g.z;
+    gx2 = 8.75 * 0.001 * imu.g.x;
+    gy2 = 8.75 * 0.001 * imu.g.y;
+    gz2 = 8.75 * 0.001 * imu.g.z;
 
     predict(&angX, gx2, deltaTime);
     predict(&angY, gy2, deltaTime);
     predict(&angZ, gz2, deltaTime);
 
-    gx1 = update(&angX, imu.a.x) / 10;
-    gy1 = update(&angY, imu.a.y) / 10;
-    gz1 = update(&angZ, imu.a.z) / 10;
+    gx1 = update(&angX, accelAngleX) ;
+    gy1 = update(&angY, accelAngleY) ;
+    gz1 = update(&angZ, accelAngleZ) ;
 
     /////////////////////////////////////////////////////////////////////////////
     //  gyro/Angle init.
@@ -176,111 +249,61 @@ void loop()
     else {
         gx1 += GyroCalX;
         gy1 += GyroCalY;
-        //gz1 += GyroCalZ;
+        gz1 += GyroCalZ;
 
         /* actions here */
-        
-        
-
     }
 
-    if(accelTabCount < accelTabSize) {
-        accelTabX[accelTabCount] = imu.a.x;
-        accelTabY[accelTabCount] = imu.a.y;
-        //accelTabZ[accelTabCount] = imu.a.z;
-        accelTabCount++;
-    }
-
-    if(accelTabCount == accelTabSize) {
-        char ii;
-        for(ii =0; ii < accelTabSize; ii++ ) {
-            accelCalX += accelTabX[ii];
-            accelCalY += accelTabY[ii];
-            //accelCalZ += accelTabZ[ii];
-        }
-        accelCalX /= accelTabSize;
-        accelCalY /= accelTabSize;
-        //accelCalZ /= accelTabSize;
-        for(ii =0; ii < accelTabSize; ii++ ) {
-            accelTabX[ii] -= accelCalX;
-            accelTabY[ii] -= accelCalY;
-            //accelTabZ[ii] -= accelCalZ;
-        }
-        accelTabCount = accelTabSize+1;
-    }
-   
-    else {
-      char ii;
-      float tempEMA_X = 0;
-      float tempEMA_Y = 0;
-      //float tempEMA_Z = 0;
-
-      //push datas in accelTabX and put new data from sensor at the end of accelTabX
-      for(ii = 0; ii <accelTabSize-1; ii++) {
-          accelTabX[ii] = accelTabX[ii+1];
-          accelTabY[ii] = accelTabY[ii+1];
-          //accelTabZ[ii] = accelTabZ[ii+1];
-      }
-      accelTabX[accelTabSize - 1] = imu.a.x - accelCalX;
-      accelTabY[accelTabSize - 1] = imu.a.y - accelCalY;
-      //accelTabZ[accelTabSize - 1] = imu.a.z - accelCalZ;
-
-      //calc EMA of acceleration.
-      // EMA_now = alpha*(val1 + ((1-alpha)**1)val2 + ((1-alpha)**2)val3 + ....
-      for(ii = accelTabSize; ii > 0; ii--) {
-          tempEMA_X += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabX[accelTabSize-ii] );
-          tempEMA_Y += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabY[accelTabSize-ii] );
-          //tempEMA_Z += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabZ[accelTabSize-ii] );
-      }
-      accelEMA_X = (int)tempEMA_X;
-      accelEMA_Y = (int)tempEMA_Y;
-      //accelEMA_Z = (int)tempEMA_Z;
-      
-      
-    }
        
 
     
     
     /* output under here */
-    /*
-    Serial.print("time (ms) : ");
-    Serial.println(nowTime);
-    Serial.print("Acceleration x,y,z :" );
-    Serial.print(accelEMA_X);
+    
+    // Serial.print("time (ms) : ");
+    Serial.print(nowTime);
     Serial.print(", ");
-    Serial.print(accelEMA_Y);
+    // Serial.print("Acceleration x,y,z :" );
+    Serial.print(accelFinalX);
     Serial.print(", ");
-    Serial.print(accelEMA_Z);
+    Serial.print(accelFinalY);
+    Serial.print(", ");
+    Serial.print(accelFinalZ);
     Serial.print("\n");
-    Serial.print(F("Angle x,y,z : "));
-    Serial.print(gx1, DEC);
-    Serial.print(F(", "));
-    Serial.print(gy1, DEC);
-    Serial.print(F(", "));
-    Serial.print(gz1, DEC);
-    Serial.println(F(""));
-    */
+    //Serial.print(F("Angle x,y,z : "));
+    //Serial.print(gx1, DEC);
+    //Serial.print(F(", "));
+    ///Serial.print(gy1, DEC);
+    //Serial.print(F(", "));
+    //Serial.print(gz1, DEC);
+   // Serial.println(F(""));
+    
 
     /* debug output here */
-    
+    /*
     char ii;
-    for(ii = 0; ii < accelTabSize;ii++) {
-      Serial.print(accelTabZ[ii]);
-      Serial.print(" ; ");
-    }
+    Serial.println("accelAngle");
+    Serial.print(accelAngleX);
+    Serial.print(F(", "));
+    Serial.print(accelAngleY);
+    Serial.print(F(", "));
+    Serial.print(accelAngleZ);
     Serial.print("\n");
-    Serial.print(imu.a.z);
-    Serial.print(" , ");
-    Serial.print(accelEMA_Z);
+
+    Serial.println("gyroAngle");
+    Serial.print(gx1);
+    Serial.print(F(", "));
+    Serial.print(gy1);
+    Serial.print(F(", "));
+    Serial.print(gz1);
     Serial.print("\n");
-    
+    */
   
   }
 
   prevTime = nowTime;
-  //delay(20);
-  delay(100); // for debug
+  delay(10);
+  //delay(100); // for debug
   
 } // End of loop()
 
