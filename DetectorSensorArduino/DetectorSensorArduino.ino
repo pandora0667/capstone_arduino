@@ -290,11 +290,11 @@ void loop()
     Serial.print(", ");
     Serial.print(accelFinalZ);
     Serial.print(", ");
-    Serial.print(gx1, DEC);
+    Serial.print(gx2, DEC);
     Serial.print(F(", "));
-    Serial.print(gy1, DEC);
+    Serial.print(gy2, DEC);
     Serial.print(F(", "));
-    Serial.print(gz1, DEC);
+    Serial.print(gz2, DEC);
     Serial.print("\n");
    // Serial.println(F(""));
     
