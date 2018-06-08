@@ -284,7 +284,9 @@ void loop()
     StaticJsonBuffer<700> jsonBuffer;
     JsonObject& outputObj = jsonBuffer.createObject();
 
-    if( !__DEBUG__ ) {
+    if( __DEBUG__ == 0 ) {
+      outputObj["deltaTime"] = deltaTime;
+      outputObj["shock"] = shock;
       JsonArray& outputAccel = outputObj.createNestedArray("acceleration");
       outputAccel.add(accelFinalX);
       outputAccel.add(accelFinalY);
@@ -295,7 +297,6 @@ void loop()
       outputAccel.add(gy2);
       outputAccel.add(gz2);
 
-      outputObj["accel"] = shock;
       outputObj.printTo(Serial);
       Serial.print("\n");
       
@@ -304,7 +305,7 @@ void loop()
     
 
     /* debug output here */
-    if(__DEBUG__ ) {
+    if(__DEBUG__ == 1 ) {
         Serial.print(nowTime);
         Serial.print(", ");
         Serial.print(shock);
