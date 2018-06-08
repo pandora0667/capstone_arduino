@@ -5,6 +5,8 @@
 #include <Wire.h>
 #include <math.h>
 
+#define __DEBUG__ 0
+
 // all datas from imu is RAW int data
 MPU9250 imu;
 I2Cdev I2C_M;
@@ -185,42 +187,42 @@ void loop()
     }
    
     else {
-      char ii;
-      float tempEMA_X = 0;
-      float tempEMA_Y = 0;
-      float tempEMA_Z = 0;
-
-      
-      //push datas in accelTabX and put new data from sensor at the end of accelTabX
-      for(ii = 0; ii <accelTabSize-1; ii++) {
-          accelTabX[ii] = accelTabX[ii+1];
-          accelTabY[ii] = accelTabY[ii+1];
-          accelTabZ[ii] = accelTabZ[ii+1];
-      }
-      accelTabX[accelTabSize - 1] = imu_a_x - accelCalX;
-      accelTabY[accelTabSize - 1] = imu_a_y - accelCalY;
-      accelTabZ[accelTabSize - 1] = imu_a_z - accelCalZ;
-
-      //calc EMA of acceleration.
-      // EMA_now = alpha*(val1 + ((1-alpha)**1)val2 + ((1-alpha)**2)val3 + ....
-      for(ii = accelTabSize; ii > 0; ii--) {
-          tempEMA_X += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabX[accelTabSize-ii] );
-          tempEMA_Y += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabY[accelTabSize-ii] );
-          tempEMA_Z += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabZ[accelTabSize-ii] );
-      }
-      // low pass filter for removing gravity
-      gravityX = 0.1 * tempEMA_X + 0.9 * gravityX;
-      gravityY = 0.1 * tempEMA_Y + 0.9 * gravityY;
-      gravityZ = 0.1 * tempEMA_Z + 0.9 * gravityZ;
-      
-      accelFinalX = 0.061 * 0.001 * (tempEMA_X - gravityX);
-      accelFinalY = 0.061 * 0.001 * (tempEMA_Y - gravityY);
-      accelFinalZ = 0.061 * 0.001 * (tempEMA_Z - gravityZ);
-
-      accelAngleX = atan((float)accelFinalY/(float)accelFinalZ) * RAD_TO_DEG;
-      accelAngleY = atan((float)accelFinalZ/(float)accelFinalX) * RAD_TO_DEG;
-      accelAngleZ = atan((float)accelFinalX/(float)accelFinalZ) * RAD_TO_DEG;
-      
+        char ii;
+        float tempEMA_X = 0;
+        float tempEMA_Y = 0;
+        float tempEMA_Z = 0;
+  
+        
+        //push datas in accelTabX and put new data from sensor at the end of accelTabX
+        for(ii = 0; ii <accelTabSize-1; ii++) {
+            accelTabX[ii] = accelTabX[ii+1];
+            accelTabY[ii] = accelTabY[ii+1];
+            accelTabZ[ii] = accelTabZ[ii+1];
+        }
+        accelTabX[accelTabSize - 1] = imu_a_x - accelCalX;
+        accelTabY[accelTabSize - 1] = imu_a_y - accelCalY;
+        accelTabZ[accelTabSize - 1] = imu_a_z - accelCalZ;
+  
+        //calc EMA of acceleration.
+        // EMA_now = alpha*(val1 + ((1-alpha)**1)val2 + ((1-alpha)**2)val3 + ....
+        for(ii = accelTabSize; ii > 0; ii--) {
+            tempEMA_X += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabX[accelTabSize-ii] );
+            tempEMA_Y += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabY[accelTabSize-ii] );
+            tempEMA_Z += ((float)accelAlphas[accelTabSize - ii] * (float)accelTabZ[accelTabSize-ii] );
+        }
+        // low pass filter for removing gravity
+        gravityX = 0.1 * tempEMA_X + 0.9 * gravityX;
+        gravityY = 0.1 * tempEMA_Y + 0.9 * gravityY;
+        gravityZ = 0.1 * tempEMA_Z + 0.9 * gravityZ;
+        
+        accelFinalX = 0.061 * 0.001 * (tempEMA_X - gravityX);
+        accelFinalY = 0.061 * 0.001 * (tempEMA_Y - gravityY);
+        accelFinalZ = 0.061 * 0.001 * (tempEMA_Z - gravityZ);
+  
+        accelAngleX = atan((float)accelFinalY/(float)accelFinalZ) * RAD_TO_DEG;
+        accelAngleY = atan((float)accelFinalZ/(float)accelFinalX) * RAD_TO_DEG;
+        accelAngleZ = atan((float)accelFinalX/(float)accelFinalZ) * RAD_TO_DEG;
+        
     }
 
     /* gyro code here */
@@ -244,22 +246,22 @@ void loop()
     //  gyro/Angle init.
     /////////////////////////////////////////////////////////////////////////////
     if(initIndex < initSize) {
-      initGyroX[initIndex] = gx1;
-      initGyroY[initIndex] = gy1;
-      initGyroZ[initIndex] = gz1;
-      if(initIndex == initSize - 1) {
-        int sumX = 0; int sumY = 0; int sumZ = 0;
-        for(int k=1; k <= initSize; k++) {
-          sumX += initGyroX[k];
-          sumY += initGyroX[k];
-          sumZ += initGyroX[k];
+        initGyroX[initIndex] = gx1;
+        initGyroY[initIndex] = gy1;
+        initGyroZ[initIndex] = gz1;
+        if(initIndex == initSize - 1) {
+            int sumX = 0; int sumY = 0; int sumZ = 0;
+            for(int k=1; k <= initSize; k++) {
+              sumX += initGyroX[k];
+              sumY += initGyroX[k];
+              sumZ += initGyroX[k];
+            }
+    
+            GyroCalX -= sumX/(initSize -1);
+            GyroCalY -= sumY/(initSize -1);
+            GyroCalZ = (sumZ/(initSize -1) - GyroCalZ);
         }
-
-        GyroCalX -= sumX/(initSize -1);
-        GyroCalY -= sumY/(initSize -1);
-        GyroCalZ = (sumZ/(initSize -1) - GyroCalZ);
-      }
-      initIndex++;
+        initIndex++;
     }
     
     /////////////////////////////////////////////////////////////////////////////
@@ -279,45 +281,47 @@ void loop()
     
     /* output under here */
     
-    // Serial.print("time (ms) : ");
-    Serial.print(nowTime);
-    Serial.print(", ");
-    Serial.print(shock);
-    Serial.print(", ");
-    Serial.print(accelFinalX);
-    Serial.print(", ");
-    Serial.print(accelFinalY);
-    Serial.print(", ");
-    Serial.print(accelFinalZ);
-    Serial.print(", ");
-    Serial.print(gx2, DEC);
-    Serial.print(F(", "));
-    Serial.print(gy2, DEC);
-    Serial.print(F(", "));
-    Serial.print(gz2, DEC);
-    Serial.print("\n");
-   // Serial.println(F(""));
+    StaticJsonBuffer<700> jsonBuffer;
+    JsonObject& outputObj = jsonBuffer.createObject();
+
+    if( !__DEBUG__ ) {
+      JsonArray& outputAccel = outputObj.createNestedArray("acceleration");
+      outputaccel.add(accelFinalX);
+      outputaccel.add(accelFinalY);
+      outputaccel.add(accelFinalZ);
+      
+      JsonArray& outputGyro = outputObj.createNestedArray("gyro");
+      outputaccel.add(gx2);
+      outputaccel.add(gy2);
+      outputaccel.add(gz2);
+
+      outputObj["accel"] = shock;
+      root.printTo(Serial);
+      Serial.print("\n");
+      
+    }
+
     
 
     /* debug output here */
-    /*
-    char ii;
-    Serial.println("accelAngle");
-    Serial.print(accelAngleX);
-    Serial.print(F(", "));
-    Serial.print(accelAngleY);
-    Serial.print(F(", "));
-    Serial.print(accelAngleZ);
-    Serial.print("\n");
-
-    Serial.println("gyroAngle");
-    Serial.print(gx1);
-    Serial.print(F(", "));
-    Serial.print(gy1);
-    Serial.print(F(", "));
-    Serial.print(gz1);
-    Serial.print("\n");
-    */
+    if(__DEBUG__ ) {
+        Serial.print(nowTime);
+        Serial.print(", ");
+        Serial.print(shock);
+        Serial.print(", ");
+        Serial.print(accelFinalX, DEC);
+        Serial.print(", ");
+        Serial.print(accelFinalY, DEC);
+        Serial.print(", ");
+        Serial.print(accelFinalZ, DEC);
+        Serial.print(", ");
+        Serial.print(gx2, DEC);
+        Serial.print(F(", "));
+        Serial.print(gy2, DEC);
+        Serial.print(F(", "));
+        Serial.print(gz2, DEC);
+        Serial.print("\n");
+    }
   
   }
 
@@ -381,5 +385,4 @@ void getShockData(void) {
     piezo = analogRead(A0);
     shock = Volt2G*(piezo - piezoCal);   
 }
-
 
