@@ -286,17 +286,17 @@ void loop()
 
     if( !__DEBUG__ ) {
       JsonArray& outputAccel = outputObj.createNestedArray("acceleration");
-      outputaccel.add(accelFinalX);
-      outputaccel.add(accelFinalY);
-      outputaccel.add(accelFinalZ);
+      outputAccel.add(accelFinalX);
+      outputAccel.add(accelFinalY);
+      outputAccel.add(accelFinalZ);
       
       JsonArray& outputGyro = outputObj.createNestedArray("gyro");
-      outputaccel.add(gx2);
-      outputaccel.add(gy2);
-      outputaccel.add(gz2);
+      outputAccel.add(gx2);
+      outputAccel.add(gy2);
+      outputAccel.add(gz2);
 
       outputObj["accel"] = shock;
-      root.printTo(Serial);
+      outputObj.printTo(Serial);
       Serial.print("\n");
       
     }
