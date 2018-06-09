@@ -31,7 +31,7 @@ class Vector3(object) :
     
         
         
-class InputData(object) :
+class ImuData(object) :
     def __init__(self, *args) :
         self.deltaTime = args[0] ## 기존 측정과 현재 측정의 시간간격. 초 단위.
         self.shock = args[1] ## 충격센서 값
@@ -78,7 +78,7 @@ class Detector(object) :
             print('result')
             print(data )
             
-            self.dataList.append( InputData(data[0], 0, data[1], data[2], data[3], 0,0,0) )
+            self.dataList.append( ImuData(data[0], 0, data[1], data[2], data[3], 0,0,0) )
             
         
     def sendData(self, format = "JSON") :
@@ -94,56 +94,13 @@ class Detector(object) :
         ## 데이터 전체를 탐색
         ## 충격값이 기준치 이상일경우 가속도값 확인
         ## 가속도 값이 기준시간 이내에 일정수치 이상일경우 사고로 간주.
-        
-        actionTime = 0
-        
-        suspicion = 0
-        detected = False
-        
-        for data in self.dataList :
-            #if data.shock > shockThreshole :
-            if data.accel.size() > 0.3 : ## for debug perpose
-                print("shock detected")
-                print(data)
-                print("shock size : " , data.accel.size() ) 
-                time.sleep(0.1)
-                if data.accel.size() < accel_normaldrive_max :
-                    pass
-                elif data.accel.size() > accel_normaldrive_max :
-                    detected = True
-                    suspicion = 1
-                elif data.accel.size() > accel_quick_braking_max :
-                    detected = True
-                    suspicion = 2
-                
-                if detected :
-                    actionTime += data.deltaTime
-                    self.accidentData.append( data )
-                else :
-                    pass
-                    
-                if actionTime > 0.3 * 1000 :
-                    self.sendData()
-                    print("action dectect over")
-                    print(actionTime)
-                    print(suspicion)
-                    
-                    self.accidentData = []
-                    actionTime = 0
-                    detected = False
-                    suspicion = 0
-                    
-                    
-            else :
-                pass
-                
 
-    def detect(self) :
         actionTime = 0
         time_detected = 0
         
         magnitude = 0
         detected = False
+        
         
         for data in self.dataList :
             if detected :
