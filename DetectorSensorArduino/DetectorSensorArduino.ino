@@ -5,7 +5,7 @@
 #include <Wire.h>
 #include <math.h>
 
-#define __DEBUG__ 0
+#define __DEBUG__ 1
 
 // all datas from imu is RAW int data
 MPU9250 imu;
@@ -46,8 +46,7 @@ void initGyroKalman(struct GyroKalman *kalman, const float Q_angle, const float 
 void predict(struct GyroKalman *kalman, float dotAngle, float dt) ;
 float update(struct GyroKalman *kalman, float angle_m);
 
-void getAccel_Data(void);
-void getGyro_Data(void);
+float getAccelSize(void);
 
 /*
 * R represents the measurement covariance noise. In this case,
@@ -121,13 +120,24 @@ float accelAngleX = 0;
 float accelAngleY = 0;
 float accelAngleZ = 0;
 
+/* accident Dectector variables */
+int acdt_magnitude = 0;
+float detectTime = 0;
+bool detected = false;
+const float ACCEL_NORMAL = 0.3;
+const float ACCEL_QUICKBRAKE =0.9;
+const float ACCEL_MEDIUM = 2.0;
+const float ACCEL_MAX = 16.0;
 
+const float ACCEL_LSB_2G = 0.061 * 0.001;
+const float ACCEL_LSB_16G = 0.488 * 0.001;
+const float GYRO_LSB_250 = 1 / 131;
 
 
 
 void setup()
 {
-  Serial.begin(230400);
+  Serial.begin(115200);
   Wire.begin();
   //init gyro and kalman filter for gyro
   initGyroKalman(&angX, Q_angle, Q_gyro, R_angle);
@@ -141,6 +151,9 @@ void setup()
   }
   
   imu.initialize();
+  imu.setFullScaleAccelRange(MPU9250_ACCEL_FS_16); // set Maximum Acceleration to 16G
+  imu.setFullScaleGyroRange(MPU9250_GYRO_FS_500); //set Maximum Gyro to 500degree/sec
+  
   delay(1000);
   getShockData();
   piezoCal = piezo;
@@ -215,14 +228,12 @@ void loop()
         gravityY = 0.1 * tempEMA_Y + 0.9 * gravityY;
         gravityZ = 0.1 * tempEMA_Z + 0.9 * gravityZ;
         
-        accelFinalX = 0.061 * 0.001 * (tempEMA_X - gravityX);
-        accelFinalY = 0.061 * 0.001 * (tempEMA_Y - gravityY);
-        accelFinalZ = 0.061 * 0.001 * (tempEMA_Z - gravityZ);
-  
-        accelAngleX = atan((float)accelFinalY/(float)accelFinalZ) * RAD_TO_DEG;
-        accelAngleY = atan((float)accelFinalZ/(float)accelFinalX) * RAD_TO_DEG;
-        accelAngleZ = atan((float)accelFinalX/(float)accelFinalZ) * RAD_TO_DEG;
-        
+        accelAngleX = atan((float)accelFinalY/(float)tempEMA_Z) * RAD_TO_DEG;
+        accelAngleY = atan((float)accelFinalZ/(float)tempEMA_X) * RAD_TO_DEG;
+        accelAngleZ = atan((float)accelFinalX/(float)tempEMA_Z) * RAD_TO_DEG;
+        accelFinalX = ACCEL_LSB_16G * (tempEMA_X - gravityX);
+        accelFinalY = ACCEL_LSB_16G * (tempEMA_Y - gravityY);
+        accelFinalZ = ACCEL_LSB_16G * (tempEMA_Z - gravityZ);
     }
 
     /* gyro code here */
@@ -230,9 +241,9 @@ void loop()
     float gx2=0, gy2=0, gz2 = 0;
 
 
-    gx2 = 8.75 * 0.001 * imu_g_x;
-    gy2 = 8.75 * 0.001 * imu_g_y;
-    gz2 = 8.75 * 0.001 * imu_g_z;
+    gx2 = GYRO_LSB_250 * imu_g_x;
+    gy2 = GYRO_LSB_250 * imu_g_y;
+    gz2 = GYRO_LSB_250 * imu_g_z;
 
     predict(&angX, gx2, deltaTime);
     predict(&angY, gy2, deltaTime);
@@ -275,7 +286,52 @@ void loop()
         /* actions here */
     }
 
-       
+    /* accident decettion */
+    float acsz = getAccelSize();
+    if(detected ) {
+        if(acsz < ACCEL_NORMAL ) {
+            if( acdt_magnitude < 0) {
+              acdt_magnitude = 0;
+            }
+        }
+        else if(acsz < ACCEL_QUICKBRAKE ) {
+            if( acdt_magnitude < 1) {
+              acdt_magnitude = 1;
+            }
+        }
+        else if(acsz < ACCEL_MEDIUM ) {
+            if( acdt_magnitude < 2) {
+              acdt_magnitude = 2;
+            }
+        }
+        else if(acsz < ACCEL_MAX ) {
+            if( acdt_magnitude < 3) {
+              acdt_magnitude = 3;
+            }
+        }
+        else {
+            Serial.print("//errror in data ");
+        }
+
+        detectTime += deltaTime;
+
+        if(detectTime > 0.3) {
+            detectTime = 0;
+            detected = true;
+            acdt_magnitude = 0;
+        }
+
+        
+    }
+
+    else {
+      //if(shock > 0.5) {
+      if(getAccelSize() > 0.3 ){
+          detected = true;
+          
+      }
+    }
+      
 
     
     
@@ -286,7 +342,9 @@ void loop()
 
     if( __DEBUG__ == 0 ) {
       outputObj["deltaTime"] = deltaTime;
+      outputObj["status"] = acdt_magnitude;
       outputObj["shock"] = shock;
+      outputObj["accelSize"] = acsz;
       JsonArray& outputAccel = outputObj.createNestedArray("acceleration");
       outputAccel.add(accelFinalX);
       outputAccel.add(accelFinalY);
@@ -308,6 +366,8 @@ void loop()
     if(__DEBUG__ == 1 ) {
         Serial.print(nowTime);
         Serial.print(", ");
+        Serial.print(acdt_magnitude);
+        Serial.print(", ");
         Serial.print(shock);
         Serial.print(", ");
         Serial.print(accelFinalX, DEC);
@@ -316,11 +376,11 @@ void loop()
         Serial.print(", ");
         Serial.print(accelFinalZ, DEC);
         Serial.print(", ");
-        Serial.print(gx2, DEC);
+        Serial.print(gx1, DEC); // printing raw gyro data due to Kalman filter bug
         Serial.print(F(", "));
-        Serial.print(gy2, DEC);
+        Serial.print(gy1, DEC);
         Serial.print(F(", "));
-        Serial.print(gz2, DEC);
+        Serial.print(gz1, DEC);
         Serial.print("\n");
     }
   
@@ -384,6 +444,10 @@ void getImuData(void) {
 
 void getShockData(void) {
     piezo = analogRead(A0);
-    shock = Volt2G*(piezo - piezoCal);   
+    shock = abs(Volt2G*(piezo - piezoCal) );   
+}
+
+float getAccelSize(void) {
+    return sqrt( accelFinalX*accelFinalX + accelFinalY*accelFinalY + accelFinalZ*accelFinalZ);
 }
 

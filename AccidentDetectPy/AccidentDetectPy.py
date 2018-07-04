@@ -1,14 +1,15 @@
 import csv
+import json
 
 from math import sqrt, pi, sin, cos, tan, atan
 import time
 
+shockThreshole = 1
 
 accel_normaldrive_max = 0.3
-
 accel_quick_braking_max = 0.9
-
-accel_sensor_limit = 15.5
+accel_medium_colision = 2.0
+accel_sensor_limit = 16
 
 class VehicleData(object) :
     def __init__(self, weight) :
@@ -50,6 +51,10 @@ class ImuReader() :
     pass
 
 ## 
+    
+## encodes IMU data to JSON formatted string
+class ImuEncoder(json.JSONEncoder) :
+    pass
     
 ## 사고탐지
 class Detector(object) :
@@ -103,10 +108,11 @@ class Detector(object) :
         
         
         for data in self.dataList :
+            print(data)
             if detected :
                 if data.accel.size() < accel_normaldrive_max :
                     pass
-                elif data.accel.size() < accel.quick_braking_max :
+                elif data.accel.size() < accel_quick_braking_max :
                     if magnitude < 1 :
                         magnitude = 1
                 elif data.accel.size() < accel_medium_colision :
@@ -127,8 +133,7 @@ class Detector(object) :
                     self.sendData()
                     
                     print("action dectect over")
-                    print(actionTime)
-                    print(magnitude)
+                    print(actionTime, magnitude)
                     
                     self.accidentData = []
                     actionTime = 0
@@ -137,7 +142,8 @@ class Detector(object) :
                     magnitude = 0
                     
             else :
-                if data.shock > shockThreshole :
+                #if data.shock > shockThreshole :
+                if data.accel.size() > 0.3 :
                     detected = True
                     time_detected = data.deltaTime
                     print("shock detected")
