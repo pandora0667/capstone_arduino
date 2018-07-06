@@ -325,8 +325,7 @@ void loop()
     }
 
     else {
-      //if(shock > 0.5) {
-      if(getAccelSize() > 0.3 ){
+      if(shock > 0.5) {
           detected = true;
           
       }

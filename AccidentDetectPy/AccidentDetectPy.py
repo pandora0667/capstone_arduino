@@ -63,7 +63,7 @@ class Detector(object) :
         self.accidentData = []
         self.imu = ImuReader()
         
-    def recvData(self) :
+    def recvDataSerial(self) :
         pass
         
     def recvDataCsv(self, filename = "data.csv") :
