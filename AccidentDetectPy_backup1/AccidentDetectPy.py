@@ -1,6 +1,5 @@
 
-import queue
-import time
+
 from Vector import *
 from ImuReader import ImuReader
 shockThreshole = 1
@@ -20,7 +19,7 @@ class VehicleData(object) :
 ## 사고탐지
 class Detector(object) :
     def __init__(self, recvType = 'i2c') :
-        self.dataList = queue.Queue() # list of InputData class
+        self.dataList = [] # list of InputData class
         self.dataBuffer = [] 
         self.accidentData = []
         self.accidentBuffer = []
@@ -34,7 +33,7 @@ class Detector(object) :
     def recvData(self) :
         self.imu.recvData()
         while self.imu.buffer.empty() == False :
-            self.dataList.put( self.imu.buffer.get() )
+            self.dataList.append( self.imu.buffer.get() )
         
     def sendData(self, format = "JSON") :
         pass
@@ -42,13 +41,20 @@ class Detector(object) :
     def printData(self) :
         pass
         
+    def addAccData(self, data) :
+        self.dataList.append(data)
+        
     def detect(self) :
         ## 데이터 전체를 탐색
         ## 충격값이 기준치 이상일경우 가속도값 확인
         ## 가속도 값이 기준시간 이내에 일정수치 이상일경우 사고로 간주.
+
+        self.actionTime = 0
         
-        while self.dataList.empty() != True :
-            data = self.dataList.get()
+        self.magnitude = 0
+        
+        
+        for data in self.dataList :
             print(data)
             if self.time_detected :
                 print(data.accel.size() )
@@ -58,14 +64,14 @@ class Detector(object) :
                     if data.accel.size_horizental() < accel_normaldrive_max and data.accel.z < accel_vertial_accept :
                         pass
                     else :
-                        if self.magnitude < 1 :
-                            self.magnitude = 1
+                        if magnitude < 1 :
+                            magnitude = 1
                 elif data.accel.size() < accel_medium_colision :
-                    if self.magnitude < 2 :
-                        self.magnitude = 2
+                    if magnitude < 2 :
+                        magnitude = 2
                 elif data.accel.size() < accel_sensor_limit :
-                    if self.magnitude < 7 :
-                        self.magnitude = 7
+                    if magnitude < 7 :
+                        magnitude = 7
                 else :
                     print("wrong data")
                     pass
@@ -73,7 +79,7 @@ class Detector(object) :
                 self.actionTime += data.deltaTime
                 self.accidentBuffer.append(data)
                 
-                if self.actionTime > 0.3 :
+                if self.actionTime > 0.3 * 1000 :
                     for index, item in enumerate(self.accidentBuffer) :
                         self.accidentBuffer[index].status = self.magnitude
                     self.accidentData.append(self.accidentBuffer)
@@ -95,15 +101,13 @@ class Detector(object) :
                 else :
                     pass
         
+        self.dataList = []
                     
     def run(self) :
-        if self.dataList.empty() :
-            self.recvData()
-            print("data recieved")
-            time.sleep(0.03)
-        else :
-            print("detecting accident")
+        if self.dataList :
             self.detect()
+        else :
+            self.recvData()
             
                     
                     
@@ -127,7 +131,7 @@ if __name__ == "__main__" :
             except:
                 raise
                 break
-        print(detect.actionTime)
+        
         print(detect.accidentData)
         print(detect.accidentBuffer)
         

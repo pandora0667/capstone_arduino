@@ -1,0 +1,23 @@
+from Filters import *
+
+ft = FilterEMA(use_lpf = True, lpf_factor = 0.1)
+
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+ft.put(10)
+print(ft.tab)
+print(ft.lpfTab)
+print(ft.get() )
+print(ft.get(True) )
