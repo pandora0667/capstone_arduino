@@ -1,4 +1,4 @@
-
+import threading
 import queue
 import time
 from Vector import *
@@ -47,7 +47,7 @@ class Detector(object) :
         ## 충격값이 기준치 이상일경우 가속도값 확인
         ## 가속도 값이 기준시간 이내에 일정수치 이상일경우 사고로 간주.
         
-        while self.dataList.empty() != True :
+        if self.dataList.empty() != True :
             data = self.dataList.get()
             print(data)
             if self.time_detected :
@@ -125,7 +125,7 @@ if __name__ == "__main__" :
             try :
                 detect.run()
             except:
-                raise
+                #raise
                 break
         print(detect.actionTime)
         print(detect.accidentData)

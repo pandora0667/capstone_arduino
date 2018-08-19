@@ -2,14 +2,14 @@
 #import asyncio
 import IMU
 import datetime
-#import os
+import threading
 import time
 import queue
 from math import pi, atan2, degrees , sqrt , sin, cos, asin
 
 
 from Vector import Vector3
-from Filters import *
+from Filter import *
 
 
 
@@ -51,8 +51,8 @@ class ImuData(object) :
         return "time : " + str(self.deltaTime) + " , " + \
                "status : " + str(self.status) + ", " + \
                "shock : " + str(self.shock) + " , " + \
-               "acceleration" + str(self.accel)  + " , " + \
-               "gyro" + str(self.gyro)
+               "acceleration : " + str(self.accel)  + " , " + \
+               "gyro : " + str(self.gyro)
       
     def __repr__(self) :
         return str(self)
