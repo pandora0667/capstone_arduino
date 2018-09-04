@@ -1,8 +1,12 @@
 import threading
 import queue
 import time
+
 from Vector import *
-from ImuReader import ImuReader
+from ImuReader import ImuReader, ImuData
+import dataSender
+
+
 shockThreshole = 1
 
 accel_normaldrive_max = 0.3
@@ -14,30 +18,79 @@ accel_vertial_accept = 0.2
 
 DEBUG_TYPE = 'i2c'
 
-class VehicleData(object) :
-    pass
-    
+
+class DriveData(object) :
+    def __init__(self, shock, accel_vector, gyro_vector, dt = 0, status = 0, latitude = 0, longitude = 0, speed = 0 ) :
+        self.shock = shock
+        self.accel = accel_vector
+        self.gyro = gyro_vector
+        self.deltaTime = dt
+        self.status = status
+        self.speed = speed
+        self.latitude = latitude
+        self.longitude = longitude
+    def __repr__(self) :
+        return str(self.accel) + ", " + str(self.speed)
+        
 ## 사고탐지
-class Detector(object) :
-    def __init__(self, recvType = 'i2c') :
-        self.dataList = queue.Queue() # list of InputData class
-        self.dataBuffer = [] 
-        self.accidentData = []
+class Detector(threading.Thread) :
+    def __init__(self, recvType = 'berry') :
+        threading.Thread.__init__(self)
+    
+        self.dataBuffer = queue.Queue() # list of InputData class
         self.accidentBuffer = []
-        self.imu = ImuReader(recvType)
+        
+        
+        self.normalData = []
+        self.accidentData = []
+        
+        self.gpsbuffer = queue.Queue(1)
+        self.speed = 0
+        self.latitude = 0
+        self.longitude = 0
         
         # temperal values just for saving detection values when data stream stoppped.
         self.actionTime = 0
         self.magnitude  = 0
         self.time_detected = 0
         
-    def recvData(self) :
-        self.imu.recvData()
-        while self.imu.buffer.empty() == False :
-            self.dataList.put( self.imu.buffer.get() )
+        self.sender = dataSender.DataSender("http://just2.asuscomm.com", "10001", serial = "1000", username = "Raininn")
+        
+        self.on = True
+        
+    def recvGPS(self, data ) :
+        if self.gpsbuffer.empty() == False :
+            self.gpsbuffer.get()
+        self.gpsbuffer.put(data) 
+        return
+        
+    def sendGPS(self, data) :
+        pass
+        
+    def put(self, data) :
+        #if self.gpsbuffer.empty() == False :
+        #    gps = self.gpsbuffer.get()
+        ##    
+        #    if gps :
+        #        self.speed = gps["speed"]
+        #        self.latitude = gps["latitude"]
+        #        self.longitude = gps["longitude"]
+    
+        temp = DriveData(data.shock, data.accel, data.gyro, data.deltaTime, \
+                        status = data.status, latitude = self.latitude, longitude = self.longitude, \
+                        speed = self.speed )
+        self.dataBuffer.put(temp)
         
     def sendData(self, format = "JSON") :
-        pass
+        for ii in self.normalData :
+            self.sender.sendDataNormal( ii)
+            
+        for jj in self.accidentData :
+            for kk in jj :
+                self.sender.sendDataAccident( kk)
+            
+        self.normalData = []
+        self.accidentData = []
         
     def printData(self) :
         pass
@@ -47,8 +100,8 @@ class Detector(object) :
         ## 충격값이 기준치 이상일경우 가속도값 확인
         ## 가속도 값이 기준시간 이내에 일정수치 이상일경우 사고로 간주.
         
-        if self.dataList.empty() != True :
-            data = self.dataList.get()
+        if self.dataBuffer.empty() != True :
+            data = self.dataBuffer.get()
             print(data)
             if self.time_detected :
                 print(data.accel.size() )
@@ -93,19 +146,21 @@ class Detector(object) :
                     self.time_detected = data.deltaTime
                     print("shock detected")
                 else :
-                    pass
-        
+                    self.normalData.append(data) 
+                    self.sendData()
                     
     def run(self) :
-        if self.dataList.empty() :
-            self.recvData()
-            print("data recieved")
-            time.sleep(0.03)
-        else :
-            print("detecting accident")
-            self.detect()
+        while self.on == True :
+            try :
+                if self.dataBuffer.empty() :
+                    print("no data in detector")
+                    time.sleep(0.2)
+                else :
+                    print("detecting accident")
+                    self.detect()
             
-                    
+            except :
+                raise
                     
                     
 if __name__ == "__main__" :
@@ -114,7 +169,7 @@ if __name__ == "__main__" :
         print(detect.imu.recvType)
         detect.recvData()
         print("\ndata recving done")
-        #print(detect.dataList )
+        #print(detect.dataBuffer )
         detect.detect()
         print("\ndetction done")
         print(detect.accidentData)
@@ -125,7 +180,7 @@ if __name__ == "__main__" :
             try :
                 detect.run()
             except:
-                #raise
+                raise
                 break
         print(detect.actionTime)
         print(detect.accidentData)

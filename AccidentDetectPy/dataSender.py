@@ -4,28 +4,22 @@ import datetime
 import json
 
 from Vector import *
-
-http = "http://"
-## 센서에서 받아온 raw 데이터.
-class ImuData(object) :
-    def __init__(self, *args) :
-        self.deltaTime = args[0] ## 기존 측정과 현재 측정의 시간간격. 밀리초(0.001초) 단위.
-        self.shock = args[1] ## 충격센서 값
-        self.accel = Vector3( args[2], args[3], args[4] ) ## 가속도값
-        self.gyro = Vector3( args[5], args[6], args[7] ) ## gyro, 각가속도 값
-        self.status = 0
-    def __str__(self) :
-        return "time : " + str(self.deltaTime) + " , " + \
-               "status : " + str(self.status) + ", " + \
-               "shock : " + str(self.shock) + " , " + \
-               "acceleration : " + str(self.accel)  + " , " + \
-               "gyro : " + str(self.gyro)
-      
-    def __repr__(self) :
-        return str(self)
+        
+        
+        
+class DriveData(object) :
+    def __init__(self, shock, accel_vector, gyro_vector, dt = 0, status = 0, latitude = 0, longitude = 0, speed = 0 ) :
+        self.shock = shock
+        self.accel = accel_vector
+        self.gyro = gyro_vector
+        self.deltaTime = dt
+        self.status = status
+        self.speed = speed
+        self.latitude = latitude
+        self.longitude = longitude
         
 class DataSender(object) :
-    def __init__(self, host, port, * , serial, username ) :
+    def __init__(self, host, port, serial, username ) :
         self.host = host
         self.port = port
         self.rootdir = "/2018/capstone/v1/api/"
@@ -34,44 +28,50 @@ class DataSender(object) :
         self.user = username
         
     def makeUrl(self, *args) :
-        return http + self.host + ":" + self.port + self.rootdir + "/".join(args) + "/"
+        return self.host + ":" + self.port + self.rootdir + "/".join(args) + "/"
         
-    def getCar(self) :
-        url = self.makeUrl("cars", self.user)
-        print(url)
-        headers = {'Content-Type': 'application/json'}
-
-        #response = requests.request("GET", url, headers=headers)
-
-        #print(response.text)
         
-    def sendDataNormal(self, data) :
-        url = self.makeUrl("regulars")
+    def sendDataNormal(self, data = None) :
+        url = "http://jusk2.asuscomm.com:10001/2018/capstone/v1/api/regulars/"
         headers = {'Content-Type': 'application/json'}
+        
         ##data sent to server
-        "serial=0001&accelerationX=10&accelerationY=10&accelerationZ=10&inclination=10"
-
-        payload = "serial={}&accelerationX={}&accelerationY={}&accelerationZ={}&inclination={}".format( \
-            self.serial, data.accel.x, data.accel.y, data.accel.z, 0) 
-            
+        payload = str(json.dumps( \
+                {"serial" : str(self.serial),\
+                 "accelerationX" : str(data.accel.x), "accelerationY" :str(data.accel.y), "accelerationZ" : str(data.accel.z), \
+                 "gyroX" : str(data.gyro.x), "gyroY" : str(data.gyro.y), "gyroZ" : str(data.gyro.z), \
+                 "inclination" : str(0), "speed" : str(0)}\
+                 ) )
+        
+        
+        
+        print(url)
         print(payload)
         
-        #response = requests.request("POST", url, data=payload, headers=headers)
-
-        #print(response.text)
-        
-    def sendDataAccident(self, data) :
-        url = "self.urlaccidents/"
-
-        payload = "serial=0001&status=2&accelerationX=50&accelerationY=50&accelerationZ=50&inclination=50&latitude=35.1567&longitude=127.4156"
-        headers = {'Content-Type': 'application/json'}
-
         response = requests.request("POST", url, data=payload, headers=headers)
 
         print(response.text)
         
+    def sendDataAccident(self, data = None) :
+        url = "http://jusk2.asuscomm.com:10001/2018/capstone/v1/api/accidents/"
+        headers = {'Content-Type': 'application/json'}
+        payload = str(json.dumps( \
+                {"serial" : str(self.serial), "status" : str(data.status), \
+                 "accelerationX" : str(data.accel.x), "accelerationY" :str(data.accel.y), "accelerationZ" : str(data.accel.z), \
+                 "gyroX" : str(data.gyro.x), "gyroY" : str(data.gyro.y), "gyroZ" : str(data.gyro.z), \
+                 "inclination" : str(0),\
+                 "longitude" : str(data.longitude), "latitude":str(data.latitude), \
+                 "temperature" : str(20) }\
+                 ) )
+        
+        response = requests.request("POST", url, data=payload, headers=headers)
+
+        print(response.text)
+        
+        
 if __name__ == "__main__" :
-    ds = DataSender("host", "65535", serial = "6974", username = "Melda")
-    data = ImuData(0.002, 8, -1, 0, 9.8, 5,6,7)
-    ds.getCar()
-    ds.sendDataNormal(data)
+    ds = DataSender("http://just2.asuscomm.com", "10001", serial = "1000", username = "Melda")
+    data = DriveData(0.2, Vector3(1,2,3), Vector3(4,5,6), dt=0.005, status = 0)
+    #ds.getCar()
+    #ds.sendDataNormal(data)
+    ds.sendDataAccident(data)

@@ -1,12 +1,13 @@
-#import sys
-#import asyncio
-import IMU
+
 import datetime
 import threading
 import time
 import queue
 from math import pi, atan2, degrees , sqrt , sin, cos, asin
 
+import spidev
+
+import IMU
 
 from Vector import Vector3
 from Filter import *
@@ -14,11 +15,12 @@ from Filter import *
 
 
 ## constants
+SHOCK_GAIN = 0.0008056640625  # [V/LSB]
 X_GAIN = 0.732 * 0.001 # [g/LSB]
 G_GAIN = 0.070  	# [deg/s/LSB]  If you change the dps for gyro, you need to update this value accordingly
 AA =  0.40      	# Complementary filter constant
-MAG_LPF_FACTOR = 0.9 	# Low pass filter constant magnetometer
-ACC_LPF_FACTOR = 0.9 	# Low pass filter constant for accelerometer
+MAG_LPF_FACTOR = 0.4 	# Low pass filter constant magnetometer
+ACC_LPF_FACTOR = 0.4 	# Low pass filter constant for accelerometer
 
 # 
 IMU_UPSIDE_DOWN = 0
@@ -34,11 +36,15 @@ magZmax =  0
 
 timelast = datetime.datetime.now()
 
-class _ImuReader(object) :
-    pass
-    
-    
-        
+spi = spidev.SpiDev()
+
+def ReadAdc(channel) :
+    if channel > 7 or channel < 0:
+        return -1
+    adc = spi.xfer2([ 6 | (channel&4) >> 2, (channel&3)<<6, 0])
+    data = ((adc[1]&15) << 8) + adc[2]
+    return data
+
 ## 센서에서 받아온 raw 데이터.
 class ImuData(object) :
     def __init__(self, *args) :
@@ -59,9 +65,10 @@ class ImuData(object) :
       
 ## IMU 에서 데이터 받아서 변환해서 넘겨줌
 ## 필터를 파이 등에 올릴경우 이쪽에 넣으면 됨.
-class ImuReader() :
+class ImuReader(threading.Thread) :
     def __init__(self, recvType = 'berry') :
-        self.recvType = recvType.lower()
+        threading.Thread.__init__(self)
+        ## filter initialise
         self.filterAccX = FilterEMA(use_lpf = True, lpf_factor = ACC_LPF_FACTOR)
         self.filterAccY = FilterEMA(use_lpf = True, lpf_factor = ACC_LPF_FACTOR)
         self.filterAccZ = FilterEMA(use_lpf = True, lpf_factor = ACC_LPF_FACTOR)
@@ -70,14 +77,29 @@ class ImuReader() :
         self.filterMagX = FilterEMA(use_lpf = True, lpf_factor = MAG_LPF_FACTOR)
         self.filterMagY = FilterEMA(use_lpf = True, lpf_factor = MAG_LPF_FACTOR)
         self.filterMagZ = FilterEMA(use_lpf = True, lpf_factor = MAG_LPF_FACTOR)
-        
+        self.filterShock = FilterEMA(use_lpf = True, lpf_factor = 0.4)
+        # initialise senser communications
         IMU.detectIMU()
         IMU.initIMU()
         
+        spi.open(0,0)
+        spi.max_speed_hz = 1000000
+        
+        ## variable for deltatime
         self.timelast = datetime.datetime.now()
         
+        ##output buffer
         self.buffer = queue.Queue()
        
+        ##log files
+        self.logger = open("RawIMU" + time.ctime().replace(" ", "") + ".csv", "w+")
+       
+        ##ImuReader status variables
+        self.on = True
+        self.recvType = recvType.lower()
+        
+        
+        
         ## set recv type
         if self.recvType == 'csvtest' :
             self.recvData = self._recvDataCsvTest
@@ -92,7 +114,6 @@ class ImuReader() :
         
     def getMagnetFilterd(self) :
         return self.filterMagX.get(), self.filterMagY.get(), self.filterMagZ.get()
-        
         
     def recvData(self) :
         pass
@@ -130,8 +151,11 @@ class ImuReader() :
         ## read values from IMU
         AccX, AccY, AccZ, GyrX, GyrY, GyrZ, MagX, MagY , MagZ = self._recvDataRaw()
         
-        ## convert raw data
+        ## read shock value from ADC
+        adc = ReadAdc(0)
         
+        ## convert raw data
+        shock = adc * SHOCK_GAIN
         
         ## apply compass calibration
         MagX -= (magXmin + magXmax) / 2
@@ -160,6 +184,9 @@ class ImuReader() :
         self.filterMagZ.put(MagZ)
         MagZ = self.filterMagZ.get(bypass_lpf = True)
         
+        ## put shock data to filter
+        self.filterShock.put(shock)
+        shock = self.filterShock.get()
         
         
         ## get angle by acceleration
@@ -224,27 +251,45 @@ class ImuReader() :
             
         ##put data to buffer so detector can take
         self.buffer.put(
-                        ImuData(dt, 0 , \
+                        ImuData(dt, shock , \
                             self.filterAccX.get() * X_GAIN, self.filterAccY.get() * X_GAIN, self.filterAccZ.get() * X_GAIN, \
-                            GyrXkalman, GyrYkalman, GyrZ * G_GAIN )
+                            GyrXkalman * G_GAIN, GyrYkalman * G_GAIN, GyrZ * G_GAIN )
                         )
                                
         ## printout
-        #print(dt)
-        #print(self.getAccelFiltered(), self.getMagnetFilterd() )
-        ##print(self.filterAngleX.get(), self.filterAngleY.get() )
+        print(dt)
+        print(self.getAccelFiltered() )#, self.getMagnetFilterd() )
+        #print("%5.2f" % shock )
+        #print(self.filterAngleX.get(), self.filterAngleY.get() )
         #print("CH %5.2f" % (headingTC) )         
+        
+        ##make log file
+        print(",".join([str(dt), str(shock) , \
+                str(self.filterAccX.get() * X_GAIN), str(self.filterAccY.get() * X_GAIN), str(self.filterAccZ.get() * X_GAIN), \
+                str(GyrXkalman * G_GAIN), str(GyrYkalman * G_GAIN), str(GyrZ * G_GAIN)] ), end="\n", file = self.logger )
+        
+        time.sleep(0.02)
         return
             
+        
+    def run(self) :
+        while self.on == True :
+            self.recvData()
     
     
     
 if __name__ == "__main__" :
     reader = ImuReader()
+    logfile = open("ImuTest.csv", "w+")
     while True :
-        reader.recvData()
+        try :
+            reader.recvData()
+        except :
+            break
     
-    
+    while reader.buffer.empty() == False :
+        bdat = reader.buffer.get()
+        print(bdat.shock, ", ",  bdat.accel.x, end = "\n", file = logfile)
     
     
     
