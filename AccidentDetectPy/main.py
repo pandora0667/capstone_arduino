@@ -18,20 +18,19 @@ imuThread = ImuReader.ImuReader()
 detectorThread = Detector.Detector()
 gpsThread = GpsReader.GpsReader()
 
-imuThread.start()
-detectorThread.start()
-gpsThread.start()
 
 starttime = time.time()
-
+gpstime = time.time()
 while True :
-    if imuThread.buffer.empty() == False :
-        detectorThread.put(imuThread.buffer.get() )  
+    if time.time() < gpstime + 5 :
+        gpsThread._run_once()
+        detectorThread.recvGPS(gpsThread.get() )
+        gpstime = time.time()
+        
+    imuThread._run_once()
+    detectorThread.put(imuThread.get() )
+    detectorThread._run_once()
     
-    
-    time.sleep(0.1)
-    detectorThread.recvGPS(gpsThread.get() )  
-    time.sleep(0.1)
 
 #imuThread.on = False
 #detectorThread.on = False

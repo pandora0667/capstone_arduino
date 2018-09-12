@@ -4,13 +4,13 @@ import threading
 from time import sleep
 import queue
 
-class GpsReader(threading.Thread) :
+class GpsReader(object) :
     def __init__(self ) :
-        threading.Thread.__init__(self)
         gpsd.connect()
         self.data = None
         self.buffer = queue.Queue(1)
         self.on = True
+        sleep(1)
         
     def recvSignal(self) :
         signal = gpsd.get_current()
@@ -47,6 +47,8 @@ class GpsReader(threading.Thread) :
             self.put(self.recvSignal() )
             sleep(0.97)
             
+    def _run_once(self) :
+        self.put(self.recvSignal() )
         
         
 if __name__ == "__main__" :

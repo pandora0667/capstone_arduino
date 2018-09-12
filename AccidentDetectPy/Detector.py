@@ -5,7 +5,7 @@ import time
 from Vector import *
 from ImuReader import ImuReader, ImuData
 import dataSender
-
+import RPi.GPIO as GPIO
 
 shockThreshole = 1
 
@@ -33,9 +33,8 @@ class DriveData(object) :
         return str(self.accel) + ", " + str(self.speed)
         
 ## 사고탐지
-class Detector(threading.Thread) :
+class Detector(object) :
     def __init__(self, recvType = 'berry') :
-        threading.Thread.__init__(self)
     
         self.dataBuffer = queue.Queue() # list of InputData class
         self.accidentBuffer = []
@@ -45,9 +44,9 @@ class Detector(threading.Thread) :
         self.accidentData = []
         
         self.gpsbuffer = queue.Queue(1)
-        self.speed = 0
-        self.latitude = 0
-        self.longitude = 0
+        self.speed = -1
+        self.latitude = -1
+        self.longitude = -1
         
         # temperal values just for saving detection values when data stream stoppped.
         self.actionTime = 0
@@ -57,6 +56,14 @@ class Detector(threading.Thread) :
         self.sender = dataSender.DataSender("http://just2.asuscomm.com", "10001", serial = "1000", username = "Raininn")
         
         self.on = True
+        
+        ## LED settings
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(20, GPIO.OUT)
+        GPIO.setup(21, GPIO.OUT)
+        self.sendingNormal = False
+        self.sendingAccident = False
+        
         
     def recvGPS(self, data ) :
         if self.gpsbuffer.empty() == False :
@@ -68,13 +75,13 @@ class Detector(threading.Thread) :
         pass
         
     def put(self, data) :
-        #if self.gpsbuffer.empty() == False :
-        #    gps = self.gpsbuffer.get()
-        ##    
-        #    if gps :
-        #        self.speed = gps["speed"]
-        #        self.latitude = gps["latitude"]
-        #        self.longitude = gps["longitude"]
+        if self.gpsbuffer.empty() == False :
+            gps = self.gpsbuffer.get()
+            
+            if gps :
+                self.speed = gps["speed"]
+                self.latitude = gps["latitude"]
+                self.longitude = gps["longitude"]
     
         temp = DriveData(data.shock, data.accel, data.gyro, data.deltaTime, \
                         status = data.status, latitude = self.latitude, longitude = self.longitude, \
@@ -92,8 +99,11 @@ class Detector(threading.Thread) :
         self.normalData = []
         self.accidentData = []
         
-    def printData(self) :
-        pass
+        if self.sendingNormal :
+            GPIO.output(20, int(self.sendingNormal) )
+        self.sendingNormal = not self.sendingNormal
+        
+        
         
     def detect(self) :
         ## 데이터 전체를 탐색
@@ -130,7 +140,6 @@ class Detector(threading.Thread) :
                     for index, item in enumerate(self.accidentBuffer) :
                         self.accidentBuffer[index].status = self.magnitude
                     self.accidentData.append(self.accidentBuffer)
-                    self.sendData()
                     
                     print("action dectect over")
                     print(self.actionTime, self.magnitude)
@@ -140,6 +149,8 @@ class Detector(threading.Thread) :
                     self.time_detected = 0
                     self.magnitude = 0
                     
+                    if self.sendingAccident :
+                        GPIO.output(21, int(self.sendingNormal) )
             else :
                 #if data.shock > shockThreshole :
                 if data.accel.size() > 0.3 :
@@ -147,7 +158,7 @@ class Detector(threading.Thread) :
                     print("shock detected")
                 else :
                     self.normalData.append(data) 
-                    self.sendData()
+                    self.sendingAccident =False
                     
     def run(self) :
         while self.on == True :
@@ -161,7 +172,10 @@ class Detector(threading.Thread) :
             
             except :
                 raise
-                    
+        
+    def _run_once(self) :
+        self.detect()
+        self.sendData()
                     
 if __name__ == "__main__" :
     if DEBUG_TYPE == 'csv' :

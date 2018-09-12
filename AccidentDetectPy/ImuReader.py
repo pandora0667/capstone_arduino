@@ -65,9 +65,8 @@ class ImuData(object) :
       
 ## IMU 에서 데이터 받아서 변환해서 넘겨줌
 ## 필터를 파이 등에 올릴경우 이쪽에 넣으면 됨.
-class ImuReader(threading.Thread) :
+class ImuReader(object) :
     def __init__(self, recvType = 'berry') :
-        threading.Thread.__init__(self)
         ## filter initialise
         self.filterAccX = FilterEMA(use_lpf = True, lpf_factor = ACC_LPF_FACTOR)
         self.filterAccY = FilterEMA(use_lpf = True, lpf_factor = ACC_LPF_FACTOR)
@@ -114,7 +113,13 @@ class ImuReader(threading.Thread) :
         
     def getMagnetFilterd(self) :
         return self.filterMagX.get(), self.filterMagY.get(), self.filterMagZ.get()
-        
+  
+    def get(self) :
+        if self.buffer.empty() :
+            return None
+        else :
+            return self.buffer.get()
+  
     def recvData(self) :
         pass
         
@@ -276,7 +281,8 @@ class ImuReader(threading.Thread) :
         while self.on == True :
             self.recvData()
     
-    
+    def _run_once(self) :
+        self.recvData()
     
 if __name__ == "__main__" :
     reader = ImuReader()

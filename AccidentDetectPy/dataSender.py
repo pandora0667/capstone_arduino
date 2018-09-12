@@ -32,7 +32,7 @@ class DataSender(object) :
         
         
     def sendDataNormal(self, data = None) :
-        url = "http://jusk2.asuscomm.com:10001/2018/capstone/v1/api/regulars/"
+        url = "http://judo01.asuscomm.com:10001/2018/capstone/v1/api/regulars/"
         headers = {'Content-Type': 'application/json'}
         
         ##data sent to server
@@ -53,7 +53,7 @@ class DataSender(object) :
         print(response.text)
         
     def sendDataAccident(self, data = None) :
-        url = "http://jusk2.asuscomm.com:10001/2018/capstone/v1/api/accidents/"
+        url = "http://judo01.asuscomm.com:10001/2018/capstone/v1/api/accidents/"
         headers = {'Content-Type': 'application/json'}
         payload = str(json.dumps( \
                 {"serial" : str(self.serial), "status" : str(data.status), \
@@ -70,7 +70,7 @@ class DataSender(object) :
         
         
 if __name__ == "__main__" :
-    ds = DataSender("http://just2.asuscomm.com", "10001", serial = "1000", username = "Melda")
+    ds = DataSender("http://judo01.asuscomm.com", "10001", serial = "1000", username = "Melda")
     data = DriveData(0.2, Vector3(1,2,3), Vector3(4,5,6), dt=0.005, status = 0)
     #ds.getCar()
     #ds.sendDataNormal(data)
