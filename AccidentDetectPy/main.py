@@ -21,8 +21,9 @@ gpsThread = GpsReader.GpsReader()
 
 starttime = time.time()
 gpstime = time.time()
+
 while True :
-    if time.time() < gpstime + 5 :
+    if time.time() > gpstime + 5 :
         gpsThread._run_once()
         detectorThread.recvGPS(gpsThread.get() )
         gpstime = time.time()

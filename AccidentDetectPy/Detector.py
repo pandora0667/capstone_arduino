@@ -82,6 +82,7 @@ class Detector(object) :
                 self.speed = gps["speed"]
                 self.latitude = gps["latitude"]
                 self.longitude = gps["longitude"]
+                print("gps updated {} {} {}".format(self.latitude, self.longitude, self.speed) )
     
         temp = DriveData(data.shock, data.accel, data.gyro, data.deltaTime, \
                         status = data.status, latitude = self.latitude, longitude = self.longitude, \

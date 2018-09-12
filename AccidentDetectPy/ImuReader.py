@@ -263,7 +263,7 @@ class ImuReader(object) :
                                
         ## printout
         print(dt)
-        print(self.getAccelFiltered() )#, self.getMagnetFilterd() )
+        #print(self.getAccelFiltered() )#, self.getMagnetFilterd() )
         #print("%5.2f" % shock )
         #print(self.filterAngleX.get(), self.filterAngleY.get() )
         #print("CH %5.2f" % (headingTC) )         
@@ -273,7 +273,6 @@ class ImuReader(object) :
                 str(self.filterAccX.get() * X_GAIN), str(self.filterAccY.get() * X_GAIN), str(self.filterAccZ.get() * X_GAIN), \
                 str(GyrXkalman * G_GAIN), str(GyrYkalman * G_GAIN), str(GyrZ * G_GAIN)] ), end="\n", file = self.logger )
         
-        time.sleep(0.02)
         return
             
         
