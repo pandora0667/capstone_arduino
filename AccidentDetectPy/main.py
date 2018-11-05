@@ -9,7 +9,7 @@ import datetime
 import Detector
 import ImuReader
 import GpsReader
-
+from OutputControl import buzzer
 
 
 ## initialise 
@@ -21,6 +21,8 @@ gpsThread = GpsReader.GpsReader()
 
 starttime = time.time()
 gpstime = time.time()
+
+buzzer()
 
 while True :
     if time.time() > gpstime + 5 :

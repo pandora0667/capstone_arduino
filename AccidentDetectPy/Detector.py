@@ -7,6 +7,8 @@ from ImuReader import ImuReader, ImuData
 import dataSender
 import RPi.GPIO as GPIO
 
+from OutputControl import buzzer, blink, normalled
+
 shockThreshole = 1
 
 accel_normaldrive_max = 0.3
@@ -56,13 +58,7 @@ class Detector(object) :
         self.sender = dataSender.DataSender("http://just2.asuscomm.com", "10001", serial = "1000", username = "Raininn")
         
         self.on = True
-        
-        ## LED settings
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(20, GPIO.OUT)
-        GPIO.setup(21, GPIO.OUT)
-        self.sendingNormal = False
-        self.sendingAccident = False
+        self.led = True
         
         
     def recvGPS(self, data ) :
@@ -100,9 +96,6 @@ class Detector(object) :
         self.normalData = []
         self.accidentData = []
         
-        if self.sendingNormal :
-            GPIO.output(20, int(self.sendingNormal) )
-        self.sendingNormal = not self.sendingNormal
         
         
         
@@ -150,8 +143,11 @@ class Detector(object) :
                     self.time_detected = 0
                     self.magnitude = 0
                     
-                    if self.sendingAccident :
-                        GPIO.output(21, int(self.sendingNormal) )
+                    ##detection output here
+                    buzzer()
+                    blink()
+                    
+                    
             else :
                 #if data.shock > shockThreshole :
                 if data.accel.size() > 0.3 :
@@ -159,7 +155,9 @@ class Detector(object) :
                     print("shock detected")
                 else :
                     self.normalData.append(data) 
-                    self.sendingAccident =False
+                    
+        normalled(self.led)
+        self.led = not self.led
                     
     def run(self) :
         while self.on == True :

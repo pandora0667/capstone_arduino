@@ -91,7 +91,7 @@ class ImuReader(object) :
         self.buffer = queue.Queue()
        
         ##log files
-        self.logger = open("RawIMU" + time.ctime().replace(" ", "") + ".csv", "w+")
+        self.logger = open("/home/pi/Detector/" + "RawIMU" + time.ctime().replace(" ", "") + ".csv", "w+")
        
         ##ImuReader status variables
         self.on = True
