@@ -138,14 +138,16 @@ class Detector(object) :
                     print("action dectect over")
                     print(self.actionTime, self.magnitude)
                     
+                    ##detection output here
+                    buzzer(self.magnitude * 0.1)
+                    blink(self.magnitude * 0.1)
+                    
+                    ## reset values and finish detection
                     self.accidentBuffer = []
                     self.actionTime = 0
                     self.time_detected = 0
                     self.magnitude = 0
                     
-                    ##detection output here
-                    buzzer()
-                    blink()
                     
                     
             else :
@@ -174,7 +176,7 @@ class Detector(object) :
         
     def _run_once(self) :
         self.detect()
-        self.sendData()
+        #self.sendData()
                     
 if __name__ == "__main__" :
     if DEBUG_TYPE == 'csv' :
